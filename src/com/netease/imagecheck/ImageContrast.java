@@ -27,7 +27,7 @@ public class ImageContrast {
 	 * @param rgb
 	 * @return xyz
 	 */
-	public static ColorXYZ RGB2XYZ(int rgb) {
+	public static ColorXYZ rgb2xyz(int rgb) {
 		ColorXYZ xyz = new ColorXYZ();
 		int r = (rgb & 0xff0000) >> 16;
 		int g = (rgb & 0xff00) >> 8;
@@ -50,7 +50,7 @@ public class ImageContrast {
 	 * @param xyz
 	 * @return lab
 	 */
-	public static ColorLAB XYZ2LAB(ColorXYZ xyz) {
+	public static ColorLAB xyz2lab(ColorXYZ xyz) {
 		ColorLAB lab = new ColorLAB();
 		double x = xyz.x / 95.047;
 		double y = xyz.y / 100.000;
@@ -109,8 +109,8 @@ public class ImageContrast {
 				int actRGB = actual.getRGB(x, y);
 				int newRGB = actRGB;
 				if (expRGB != actRGB) {
-					double deltaE = getDelta(XYZ2LAB(RGB2XYZ(expRGB)), XYZ2LAB(RGB2XYZ(actRGB)));
-					if (deltaE > Settings.MaxColorThreshold) {
+					double deltaE = getDelta(xyz2lab(rgb2xyz(expRGB)), xyz2lab(rgb2xyz(actRGB)));
+					if (deltaE > Settings.maxColorThreshold) {
 						newRGB = 0xff0000;// set red in difference place
 					}
 					isMatched = false;
@@ -121,25 +121,31 @@ public class ImageContrast {
 		FileOutputStream out = null;
 		if (!isMatched) {
 			try {
-				out = new FileOutputStream(Settings.ContrastImagePath + differenceImagePath + time + ".png");
+				out = new FileOutputStream(Settings.contrastImagePath + differenceImagePath + time + ".png");
 				JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
 				encoder.encode(difference);
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {
 				out.close();
-				System.err.println("UIstyle wrong!" + Settings.ContrastImagePath + differenceImagePath + time + ".png");
+				System.err.println("UIstyle wrong!" + Settings.contrastImagePath + differenceImagePath + time + ".png");
 			}
 		}
 		return isMatched;
 	}
-
+	
+	/**
+	 * RGB color space
+	 */
 	public static class ColorLAB {
 		public double l;
 		public double a;
 		public double b;
 	}
-
+	
+	/**
+	 * XYZ color space
+	 */
 	public static class ColorXYZ {
 		public double x;
 		public double y;

@@ -39,29 +39,29 @@ public class ImageProcess {
 		}
 		rb.mouseMove(0, 0);// move mouse to top left corner, for eliminating some effects of hover in pages
 
-		String dir_name = null;
-		if (Settings.ScreenShotType == 1) {
-			dir_name = Settings.SampleImagePath + folderName;
-		} else if (Settings.ScreenShotType == 2) {
-			dir_name = Settings.ContrastImagePath + folderName;
+		String dirName = null;
+		if (Settings.screenShotType == 1) {
+			dirName = Settings.sampleImagePath + folderName;
+		} else if (Settings.screenShotType == 2) {
+			dirName = Settings.contrastImagePath + folderName;
 		} else {
 			System.err.println("Wrong type！Please check type.properties！");
 		}
-		if (Settings.BrowserCoreType == 1 || Settings.BrowserCoreType == 3) {
+		if (Settings.browserCoreType == 1 || Settings.browserCoreType == 3) {
 			augmentedDriver.manage().window().setPosition(new Point(0, 0));
 			augmentedDriver.manage().window().setSize(new Dimension(9999, 9999));
-		} else if (Settings.BrowserCoreType == 2) {
+		} else if (Settings.browserCoreType == 2) {
 			augmentedDriver = new Augmenter().augment(augmentedDriver);
 		} else {
 			System.err.println("Wrong type！Please check type.properties！");
 		}		
 		try {
-			File source_file = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
-			FileUtils.copyFile(source_file, new File(dir_name + File.separator + imageName + ".png"));
+			File sourceFile = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
+			FileUtils.copyFile(sourceFile, new File(dirName + File.separator + imageName + ".png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return dir_name + File.separator + imageName + ".png";
+		return dirName + File.separator + imageName + ".png";
 	}
 
 	/**
@@ -106,21 +106,21 @@ public class ImageProcess {
 	public static void process(WebDriver driver, String folderName, String checkPoint, String xpath) throws Exception {
 		WebDriverWait wait = new WebDriverWait(driver, 10);
 		WebElement we = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpath)));
-		we = FindElement(driver, By.xpath(xpath));
+		we = findElement(driver, By.xpath(xpath));
 		String sampleImage = checkPoint + "_sample";
 		String differenceImage = checkPoint + "_difference";
 		String actualImage = null;
-		if (Settings.ScreenShotType == 1) {
+		if (Settings.screenShotType == 1) {
 			actualImage = ImageProcess.screenShot(driver, folderName, sampleImage);
-		} else if (Settings.ScreenShotType == 2) {
+		} else if (Settings.screenShotType == 2) {
 			actualImage = ImageProcess.screenShot(driver, folderName, checkPoint);
-			ImageContrast.contrastImages(Settings.SampleImagePath + folderName + File.separator + sampleImage, actualImage, folderName + File.separator + differenceImage, we);
+			ImageContrast.contrastImages(Settings.sampleImagePath + folderName + File.separator + sampleImage, actualImage, folderName + File.separator + differenceImage, we);
 		} else {
 			System.err.println("Wrong type！Please check type.properties！");
 		}
 	}
 
-	private static WebElement FindElement(WebDriver driver, By by) {
+	private static WebElement findElement(WebDriver driver, By by) {
 		WebElement webElement = null;
 		try {
 			webElement = driver.findElement(by);
