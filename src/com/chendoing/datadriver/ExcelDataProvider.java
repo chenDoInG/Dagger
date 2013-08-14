@@ -46,8 +46,8 @@ public class ExcelDataProvider implements Iterator<Object[]> {
             InputStream inputStream = new FileInputStream(path);
 
             book = Workbook.getWorkbook(inputStream);
-            // sheet = book.getSheet(methodname);
-            sheet = book.getSheet(0);
+             sheet = book.getSheet(methodname);
+//            sheet = book.getSheet(0);
             rowNum = sheet.getRows();
             Cell[] cell = sheet.getRow(0);
             columnNum = cell.length;
